@@ -1,13 +1,27 @@
 import React, { useState } from "react";
 
-export default function NewGoalForm({ addGoal }) {
+function NewGoalForm({ addGoal }) {
   const [form, setForm] = useState({ name: "", targetAmount: 0, category: "", deadline: "" });
 
-  const submit = e => {
-    e.preventDefault();
-    addGoal({ ...form, savedAmount: 0, createdAt: new Date().toISOString().slice(0,10) });
-    setForm({ name: "", targetAmount: 0, category: "", deadline: "" });
+  
+const submit = e => {
+  e.preventDefault();
+
+  const newGoal = {
+    ...form,
+    savedAmount: 0,
+    createdAt: new Date().toLocaleDateString("en-CA")
   };
+
+  addGoal(newGoal);
+
+  setForm({
+    name: "",
+    targetAmount: 0,
+    category: "",
+    deadline: ""
+  });
+};
 
   return (
     <form onSubmit={submit}>
@@ -21,3 +35,4 @@ export default function NewGoalForm({ addGoal }) {
   );
 }
 
+export default NewGoalForm

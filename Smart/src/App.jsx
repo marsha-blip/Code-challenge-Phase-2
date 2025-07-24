@@ -1,23 +1,25 @@
-// src/App.jsx
-import { useState, useEffect } from 'react';
-import Overview from "./Component/Overview.js";
-import NewGoalForm from "./Component/NewGoalForm.js";
-import DepositForm from "./Component/DepositForm.js";
+import { useState, useEffect } from "react";
+import Overview from "./Component/Overview.jsx";
+import NewGoalForm from "./Component/NewGoalForm.jsx";
+import DepositForm from "./Component/DepositForm.jsx";
+import GoalList from "./Component/GoalList.jsx";
 
-const API = 'http://localhost:3000/goals';
+const API = "http://localhost:3000/goals"; 
 
-function App() {
+export default function App() {
   const [goals, setGoals] = useState([]);
 
-  // Fetch goals on load
+  // Fetch goals 
   useEffect(() => {
     fetchGoals();
   }, []);
 
   const fetchGoals = async () => {
     try {
-      const res = await axios.get(API);
-      setGoals(res.data);
+      const res = await fetch(API);
+      if (!res.ok) throw new Error(`Failed: ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      setGoals(data);
     } catch (e) {
       console.error("Failed to fetch goals:", e);
     }
@@ -26,7 +28,12 @@ function App() {
   // Create a new goal
   const addGoal = async (goal) => {
     try {
-      await axios.post(API, goal);
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(goal),
+      });
+      if (!res.ok) throw new Error(`Failed: ${res.status} ${res.statusText}`);
       fetchGoals();
     } catch (e) {
       console.error("Failed to add goal:", e);
@@ -36,7 +43,12 @@ function App() {
   // Update an existing goal
   const updateGoal = async (id, data) => {
     try {
-      await axios.patch(`${API}/${id}`, data);
+      const res = await fetch(`${API}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(`Failed: ${res.status} ${res.statusText}`);
       fetchGoals();
     } catch (e) {
       console.error("Failed to update goal:", e);
@@ -46,7 +58,8 @@ function App() {
   // Delete a goal
   const deleteGoal = async (id) => {
     try {
-      await axios.delete(`${API}/${id}`);
+      const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`Failed: ${res.status} ${res.statusText}`);
       fetchGoals();
     } catch (e) {
       console.error("Failed to delete goal:", e);
@@ -66,7 +79,5 @@ function App() {
     </div>
   );
 }
-
-export default App;
 
 
